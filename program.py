@@ -1,22 +1,8 @@
-import psycopg2
-from psycopg2 import sql
-import clubMember as cm
-import trainer as tr
-import admin as ad
+import connection as connect
+import clubMember as member
+import trainer as trainer
+import admin as admin
 
-#------CONNECTION SETUP------#
-#Set up database connection
-connection = psycopg2.connect(
-    #Replace the strings inbetween " " with your database information
-    dbname = "yourDatabaseName",
-    user = "yourUsername",
-    password = "yourPassword",
-    host = "yourHost",
-    port = "yourPort"
-)
-
-#Create cursor to run SQL queries
-cursor = connection.cursor()
 
 #-----MAIN FLOW-----#
 while True:
@@ -33,20 +19,21 @@ while True:
     match(operation):
 
         case 1:
-            registerNewMember()
+            member.registerNewMember()
 
         case 2: 
-            clubMemberLogin()
+            member.clubMemberLogin()
 
         case 3:
-            trainerLogin()
+            trainer.trainerLogin()
 
         case 4:
-            adminLogin()
+            admin.adminLogin()
 
         case 5: 
             break
 
 #Close cursor and connection
+connection, cursor = connect.connect()
 cursor.close()
 connection.close()

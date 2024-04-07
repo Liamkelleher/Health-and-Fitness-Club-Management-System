@@ -1,7 +1,9 @@
+import connection as database
 #-----MEMBER FUNTIONS-----#
 
 #Add new Club Member
 def registerNewMember():
+
     return
 
 def updateInfo(id):
@@ -40,8 +42,8 @@ def clubMemberLogin():
         print("~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~")
         print("1. Update person information")
         print("2. Update fitness achievements")
-        print("3. Update health statistics\n")
-        print("4. Display dashboard\n")
+        print("3. Update health statistics")
+        print("4. Display dashboard")
         print("5. Schedule personal training session")
         print("6. Reschedule personal training session")
         print("7. Cancel personal training session")

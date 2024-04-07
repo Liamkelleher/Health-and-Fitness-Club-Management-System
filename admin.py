@@ -1,3 +1,5 @@
+import connection as database
+
 #-----ADMIN FUNTIONS-----#
 def manageBookings():
     return

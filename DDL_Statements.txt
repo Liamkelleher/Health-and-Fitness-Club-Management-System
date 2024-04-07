@@ -43,7 +43,7 @@ CREATE TABLE Billing (
 	membership VARCHAR(255),
 	trainingSession INT,
 	otherServices VARCHAR(255),
-	date DATE,
+	day DATE,
 	FOREIGN KEY (memberID) REFERENCES ClubMember(memberID)
 );
 

@@ -1,6 +1,9 @@
+import connection as database
+
 #-----TRAINER FUNTIONS-----#
 
 def viewAvailibity():
+
     return
 
 def addAvailability():
