@@ -4,7 +4,6 @@
 def registerNewMember():
     return
 
-
 def updateInfo(id):
     return
 

@@ -1,8 +1,8 @@
 import psycopg2
 from psycopg2 import sql
-import clubMember.py as cm
-import trainer.py as tr
-import admin.py as ad
+import clubMember 
+import trainer as tr
+import admin as ad
 
 #------CONNECTION SETUP------#
 #Set up database connection
@@ -17,8 +17,6 @@ connection = psycopg2.connect(
 
 #Create cursor to run SQL queries
 cursor = connection.cursor()
-
-
 
 #-----MAIN FLOW-----#
 while True:
