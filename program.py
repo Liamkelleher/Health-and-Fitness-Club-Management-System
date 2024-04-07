@@ -1,6 +1,6 @@
 import psycopg2
 from psycopg2 import sql
-import clubMember 
+import clubMember as cm
 import trainer as tr
 import admin as ad
 
