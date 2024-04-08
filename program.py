@@ -3,16 +3,20 @@ import clubMember as member
 import trainer as trainer
 import admin as admin
 
-
 #-----MAIN FLOW-----#
+
+connect.initData()
+
 while True:
 
     print("~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~")
     print("1. Register new Club Member")
     print("2. Log in as Club Member")
-    print("3. Log in as Trainer")
-    print("4. Log in as Administrative Staff")
-    print("5. Quit")
+    print("3. Register new Trainer")
+    print("4. Log in as Trainer")
+    print("5. Register new Administrative Staff")
+    print("6. Log in as Administrative Staff")
+    print("7. Quit")
     
     operation = int(input("Please choose an operation: "))
 
@@ -25,12 +29,18 @@ while True:
             member.clubMemberLogin()
 
         case 3:
-            trainer.trainerLogin()
+            trainer.registerNewTrainer()
 
         case 4:
+            trainer.trainerLogin()
+
+        case 5:
+            admin.registerNewTrainer()
+
+        case 6:
             admin.adminLogin()
 
-        case 5: 
+        case 7: 
             break
 
 #Close cursor and connection
