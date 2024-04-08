@@ -96,7 +96,7 @@ def verification():
 
     return
 
-def trainerOperations(trainerID, trainerName):
+def trainerLogin():
 
     #Check if admin in the system
     verify, id, fName, lName = verification()
@@ -110,7 +110,7 @@ def trainerOperations(trainerID, trainerName):
     print(f"\nLogin successful.\nWelcome back Trainer # {id}: {fName} {lName}!\n")
 
     while True:
-        print("\n~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~")
+        print("~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~")
         print("0. Log out")
         print("1. View availabity")
         print("2. Add availability")
