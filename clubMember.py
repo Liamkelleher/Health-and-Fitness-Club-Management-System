@@ -30,16 +30,46 @@ def cancelTraining():
 def participateInClass():
     return
 
+def verification():
+
+    #Get data
+    print("~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~")
+    print("Club Member Login:\n")
+    email = input("Enter your email:    ")
+    password = input("Enter your password: ")
+
+    #Check data
+    query = """
+    SELECT memberid, fName, lName FROM clubmember
+    WHERE email=%s AND password=%s;
+    """
+    result = database.login(query, (email, password))
+
+    #If not
+    if(result == []):
+        return False, None, None, None
+    
+    #If works
+    return True, result[0], result[1], result[2]
+
 #Log in as Club Member
 def clubMemberLogin():
 
-    #Login using ID
-    #If failed return
-        #return  
+    #Check if member in the system
+    verify, id, fName, lName = verification()
+
+    if(verify == False):
+        print("~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~")
+        print("\nLogin unsuccessful\n")
+        return
+
+    print("~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~")
+    print(f"\nLogin successful.\nWelcome back Club Member # {id}: {fName} {lName}!\n")
 
     #If success
     while True:
         print("~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~")
+        print("0. Logout")
         print("1. Update person information")
         print("2. Update fitness achievements")
         print("3. Update health statistics")
@@ -48,10 +78,11 @@ def clubMemberLogin():
         print("6. Reschedule personal training session")
         print("7. Cancel personal training session")
         print("8. Participate in class")
-        print("9. Logout")
         operation = int(input("Please choose an operation: "))
 
         match(operation):
+            case 0: 
+                break
 
             case 1:
                 updateInfo()
@@ -77,5 +108,3 @@ def clubMemberLogin():
             case 8:
                 participateInClass()
                   
-            case 9: 
-                break

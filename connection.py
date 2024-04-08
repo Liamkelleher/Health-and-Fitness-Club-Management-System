@@ -17,31 +17,41 @@ def connect():
 
     return connection, cursor
 
+#Add initial data if not included
 def initData():
-    connection, cursor = connect()
-    
-    cursor.execute("""SELECT COUNT(*) FROM trainingEquipment""")
 
-    if(cursor.fetchone()[0] == 0):
-        cursor.execute(
-            """INSERT INTO trainingEquipment (name, status) VALUES
+    query = """SELECT COUNT(*) FROM admin"""
+    result = executeQuery(query)
+
+    if(result[0][0] == 0):
+        query = """INSERT INTO admin (email, password, fname, lname) VALUES
+                ('admin', 'admin', 'big', 'admin')
+                """
+        
+        executeQuery(query)
+
+    #Training equipment check
+    #Check if data is in table
+    query = """SELECT COUNT(*) FROM trainingEquipment"""
+    result = executeQuery(query)
+
+    #Add data
+    if(result[0][0] == 0):
+        query = """INSERT INTO trainingEquipment (name, status) VALUES
             ('Bench', 'Good'),
             ('Squat rack', 'Decent'),
             ('Treadmill', 'Not functional');
-            """)
-        connection.commit()
-
-    connection.close()
-    cursor.close()
+            """
+        executeQuery(query)
 
 # helper for executing queries
 def executeQuery(query, parameters=()):
     connection, cursor = connect()
     cursor.execute(query, parameters)
-    
+
     # SELECT queries
     if query.strip().upper().startswith("SELECT"):
-        result = cursor.fetchall()  
+        result = cursor.fetchall()
 
     # INSERT, UPDATE, DELETE queries
     else: 
@@ -52,4 +62,12 @@ def executeQuery(query, parameters=()):
     connection.close()
 
     return result
+    
+def login(query, parameters=()):
+
+    result = executeQuery(query, parameters)
+    #If result exists, email + pw combo exists
+    if(result):
+        return result[0]    
+    return []
     

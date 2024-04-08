@@ -72,48 +72,58 @@ def viewMember():
     return
 
 # Log in as Trainer
-def trainerLogin():
-    email = input("Enter your email: ")
+def verification():
+
+    #Get data
+    print("~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~")
+    print("Trainer Login:\n")
+    email = input("Enter your email:    ")
     password = input("Enter your password: ")
-    
 
+    #Check data
     query = """
-    SELECT trainerID, fName, lName FROM Trainer
-    WHERE email = %s AND password = %s;
+    SELECT trainerid, fName, lName FROM trainer
+    WHERE email=%s AND password=%s;
     """
+    result = database.login(query, (email, password))
 
-    connection, cursor = database.connect()
-    cursor.execute(query, (email, password))
+    #If not
+    if(result == []):
+        return False, None, None, None
     
-    result = cursor.fetchone()
-    
-    if result:
-        trainerID, trainerName, trainerLastName = result
-        print(f"Login successful.\nWelcome back Trainer # {trainerID}: {trainerName} {trainerLastName}!")
-    else:
-        print("Login failed. Please try again.")
-        return
+    #If works
+    return True, result[0], result[1], result[2]
 
-    connection.commit()
-    cursor.close()
-    connection.close()
-
-    # once logged in, can perform trainer operations
-    trainerOperations(trainerID, trainerName)
+    return
 
 def trainerOperations(trainerID, trainerName):
+
+    #Check if admin in the system
+    verify, id, fName, lName = verification()
+
+    if(verify == False):
+        print("~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~")
+        print("\nLogin unsuccessful\n")
+        return
+
+    print("~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~")
+    print(f"\nLogin successful.\nWelcome back Trainer # {id}: {fName} {lName}!\n")
+
     while True:
         print("\n~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~")
+        print("0. Log out")
         print("1. View availabity")
         print("2. Add availability")
         print("3. Update availability")
         print("4. Remove availability")
         print("5. View member")
-        print("6. Log out")
 
         operation = int(input("Please choose an operation: "))
 
         match(operation):
+            case 0:
+                break
+
             case 1:
                 viewAvailibity(trainerID, trainerName)
                 
@@ -129,7 +139,5 @@ def trainerOperations(trainerID, trainerName):
             case 5:
                 viewMember()
         
-            case 6:
-                break
         
                 
