@@ -81,7 +81,7 @@ CREATE TABLE TrainingSession (
 -- Admin updates class
 CREATE TABLE Class (
 	classID SERIAL PRIMARY KEY,
-	roomNum INT,
+	roomNum INT UNIQUE,
 	spots INT,
 	type VARCHAR(255),
 	day DATE,

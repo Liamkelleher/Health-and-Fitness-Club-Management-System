@@ -17,3 +17,20 @@ def connect():
 
     return connection, cursor
 
+def initData():
+    connection, cursor = connect()
+    
+    cursor.execute("""SELECT COUNT(*) FROM trainingEquipment""")
+
+    if(cursor.fetchone()[0] == 0):
+        cursor.execute(
+            """INSERT INTO trainingEquipment (name, status) VALUES
+            ('Bench', 'Good'),
+            ('Squat rack', 'Decent'),
+            ('Treadmill', 'Not functional');
+            """)
+        connection.commit()
+
+    connection.close()
+    cursor.close()
+    
