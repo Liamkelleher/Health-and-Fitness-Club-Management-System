@@ -6,11 +6,11 @@ from psycopg2 import sql
 def connect():
     connection = psycopg2.connect(
         #Replace the strings inbetween " " with your database information
-        dbname = "Health-and-Fitness-Club-Management-System",
-        user = "postgres",
-        password = "liam872003",
-        host = "localhost",
-        port = "5432"
+        dbname = "yourDatabaseName",
+        user = "yourUsername",
+        password = "yourPassword",
+        host = "yourHost",
+        port = "yourPort"
     )
 
     cursor = connection.cursor()
@@ -33,4 +33,23 @@ def initData():
 
     connection.close()
     cursor.close()
+
+# helper for executing queries
+def executeQuery(query, parameters=()):
+    connection, cursor = connect()
+    cursor.execute(query, parameters)
+    
+    # SELECT queries
+    if query.strip().upper().startswith("SELECT"):
+        result = cursor.fetchall()  
+
+    # INSERT, UPDATE, DELETE queries
+    else: 
+        connection.commit()  
+        result = None
+
+    cursor.close()
+    connection.close()
+
+    return result
     

@@ -2,37 +2,18 @@ import connection as database
 
 #-----TRAINER FUNTIONS-----#
 
-# helper for executing queries
-def executeQuery(query, parameters=()):
-    connection, cursor = database.connect()
-    cursor.execute(query, parameters)
-    
-    # SELECT queries
-    if query.strip().upper().startswith("SELECT"):
-        result = cursor.fetchall()  
-
-    # INSERT, UPDATE, DELETE queries
-    else: 
-        connection.commit()  
-        result = None
-
-    cursor.close()
-    connection.close()
-
-    return result
-
 def viewAvailibity(trainerID, trainerName):
     query = """
-    SELECT day, startTime, endTime, isFree
+    SELECT availabilityID, day, startTime, endTime, isFree
     FROM Availabilities
     WHERE trainerID = %s
     """
-    results = executeQuery(query, (trainerID,))
+    results = database.executeQuery(query, (trainerID,))
 
-    print(f"{trainerName}'s AVAILABILITY:")
+    print(f"\n{trainerName}'s AVAILABILITY:")
     for day in results:
-        print("-----------------------------------------------------------")
-        print(f"Day: {day[0]}, Start Time: {day[1]}, End Time: {day[2]}, Is Free?: {day[3]}")
+        print("-----------------------------------------------------------------------------------")
+        print(f"ID: {day[0]} || Day: {day[1]}, Start Time: {day[2]}, End Time: {day[3]}, Is Free?: {day[4]}")
     return
 
 def addAvailability(trainerID):
@@ -46,7 +27,7 @@ def addAvailability(trainerID):
     VALUES (%s, %s, %s, %s, %s)
     """
 
-    executeQuery(query, (trainerID, day, startTime, endTime, isFree))
+    database.executeQuery(query, (trainerID, day, startTime, endTime, isFree))
 
     print("Availability updated successfully.")
     return
@@ -66,7 +47,7 @@ def updateAvailability(trainerID, trainerName):
     WHERE trainerID = %s
     """
 
-    executeQuery(query, (isFree, trainerID))
+    database.executeQuery(query, (isFree, trainerID))
 
     print("Availability updated successfully.")
     return
@@ -82,7 +63,7 @@ def removeAvailability(trainerID):
     VALUES (%s, %s, %s, %s, %s)
     """
 
-    executeQuery(query, (trainerID, day, startTime, endTime, isFree))
+    database.executeQuery(query, (trainerID, day, startTime, endTime, isFree))
 
     print("Availability removed successfully.")
     return
@@ -108,7 +89,7 @@ def trainerLogin():
     
     if result:
         trainerID, trainerName, trainerLastName = result
-        print(f"Login successful.\nWelcome back {trainerID}: {trainerName} {trainerLastName}!")
+        print(f"Login successful.\nWelcome back Trainer # {trainerID}: {trainerName} {trainerLastName}!")
     else:
         print("Login failed. Please try again.")
         return
@@ -122,7 +103,7 @@ def trainerLogin():
 
 def trainerOperations(trainerID, trainerName):
     while True:
-        print("~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~")
+        print("\n~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~")
         print("1. View availabity")
         print("2. Add availability")
         print("3. Update availability")

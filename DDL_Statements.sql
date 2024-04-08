@@ -57,12 +57,12 @@ CREATE TABLE Trainer (
 
 -- one-to-many relationship with trainer
 CREATE TABLE Availabilities (
+	availabilityID SERIAL PRIMARY KEY,
 	trainerID INT,
 	day DATE,
 	startTime TIME,
 	endTime TIME,
 	isFree BOOLEAN,
-	PRIMARY KEY (trainerID),
 	FOREIGN KEY (trainerID) REFERENCES Trainer(trainerID)
 );
 
