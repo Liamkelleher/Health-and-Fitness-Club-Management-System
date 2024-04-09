@@ -13,21 +13,20 @@ def viewAvailibity(trainerID, trainerName):
     print(f"\n{trainerName}'s AVAILABILITY:")
     for day in results:
         print("-----------------------------------------------------------------------------------")
-        print(f"ID: {day[0]} || Day: {day[1]}, Start Time: {day[2]}, End Time: {day[3]}, Is Free?: {day[4]}")
+        print(f"ID: {day[0]} || Day: {day[1]}, Start Time: {day[2]}, End Time: {day[3]}, Is Free? {day[4]}")
     return
 
 def addAvailability(trainerID):
     day = input("Enter Day (YYYY-MM-DD): ")
     startTime = input("Enter Start Time (HH:MM): ") + ":00"
     endTime = input("Enter End Time (HH:MM): ") + ":00"
-    isFree = (input("Free(1) or Busy(0)? "))
 
     query = """
     INSERT INTO Availabilities (trainerID, day, startTime, endTime, isFree)
     VALUES (%s, %s, %s, %s, %s)
     """
 
-    database.executeQuery(query, (trainerID, day, startTime, endTime, isFree))
+    database.executeQuery(query, (trainerID, day, startTime, endTime, True))
 
     print("Availability updated successfully.")
     return

@@ -107,7 +107,7 @@ CREATE TABLE TrainingEquipment (
     status VARCHAR(255)
 );
 
-CREATE OR REPLACE FUNCTION createNewUserDashboard()
+CREATE FUNCTION createNewUserDashboard()
 RETURNS TRIGGER AS $$
 BEGIN
     INSERT INTO Dashboard (memberID, restHR, weight, height)
@@ -120,3 +120,19 @@ CREATE TRIGGER createDashboardTrigger
 AFTER INSERT ON ClubMember
 FOR EACH ROW
 EXECUTE FUNCTION createNewUserDashboard();
+
+CREATE FUNCTION noLongerFreeAvailibility()
+RETURNS TRIGGER AS $$
+BEGIN
+    UPDATE Availabilities
+    SET isFree = FALSE
+    WHERE trainerID = NEW.trainerID
+    AND day = NEW.day AND startTime = NEW.startTime AND endTime = NEW.endTime;
+RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER update_availabilities_trigger
+AFTER INSERT ON TrainingSession
+FOR EACH ROW
+EXECUTE FUNCTION noLongerFreeAvailibility();

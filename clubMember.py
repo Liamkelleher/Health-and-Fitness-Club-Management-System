@@ -129,7 +129,6 @@ def displayDashboard(id):
     for achievement in result:
         print(" -", achievement[0])
 
-
     #Display routines
     query = """SELECT routine FROM routines
             WHERE memberid=%s"""
@@ -138,24 +137,54 @@ def displayDashboard(id):
     for routine in result:
         print(" -", routine[0])
 
+    #Display schedule
+    query = """SELECT s.scheduleid, t.fName, t.lName, s.day, s.startTime, s.endTime
+                FROM Trainer t JOIN trainingsession s ON t.trainerID = s.trainerID
+                WHERE s.memberid=%s
+                ORDER BY s.day ASC"""
+    result = database.executeQuery(query, (id,))
+    print("\nSchedule: ")
+    for schedule in result:
+        print("Schedule ID:  ", schedule[0])
+        print("Trainer name: ", schedule[1] + " " + schedule[2])
+        print("Date:         ", schedule[3])
+        print("Time:         ", schedule[4], "-", schedule[5])
+        print()
+
     return
 
 
 #8. Schedule personal training session
+def viewAvailableTrainingSessions():
+    query = """SELECT a.availabilityID, t.fName, t.lName, a.day, a.startTime, a.endTime
+                FROM Trainer t JOIN Availabilities a ON t.trainerID = a.trainerID
+                WHERE a.isFree = TRUE"""
+    result = database.executeQuery(query)
+    print("~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~")
+    print("Schedules: \n")
+    for possibleTS in result:
+        print("- - - - - - - - - - - - - - - - - - - -")
+        print("Schedule ID: ", possibleTS[0])
+        print("Trainer: ", possibleTS[1] + " " + possibleTS[2])
+        print("Date: ", possibleTS[3])
+        print("Time: ", possibleTS[4], "-", possibleTS[5])
+
 def scheduleTraining(id):
     print("~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~")
 
     choice = int(input("Input the schedule ID of the training session: "))
     
-    query = """SELECT trainerID, day, startTime, endTime
-                WHERE availabilityID = %s
-                """
-    result = database.executeQuery(query, (choice))
+    query = """SELECT trainerid, day, startTime, endTime 
+            FROM availabilities
+            WHERE availabilityID = %s"""
+    
+    result = database.executeQuery(query, (choice,))
     result = result[0]
     
     query = """INSERT INTO TrainingSession (memberID, trainerID, day, startTime, endTime)
                 VALUES (%s, %s, %s, %s, %s)"""
     result = database.executeQuery(query, (id, result[0], result[1], result[2], result[3]))
+    query = """UPDATE availabities"""
 
     return
 
@@ -174,19 +203,6 @@ def participateInClass():
 #12. Cancel class
 def cancelClass():
     return
-
-def viewAvailableTrainingSessions():
-    query = """SELECT a.availabilityID, t.fName, t.lName, a.day, a.startTime, a.endTime
-                FROM Trainer t JOIN Availabilities a ON t.trainerID = a.trainerID
-                WHERE a.isFree = TRUE"""
-    result = database.executeQuery(query)
-    print("~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~")
-    for possibleTS in result:
-        print("- - - - - - - - - - - - - - - - - - - -")
-        print("Schedule ID: ", possibleTS[0])
-        print("Trainer: ", possibleTS[1], " ", possibleTS[2])
-        print("Date: ", possibleTS[3])
-        print("Time: ", possibleTS[4], "-", possibleTS[5])
 
 def verification():
 
