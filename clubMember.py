@@ -192,7 +192,25 @@ def rescheduleTraining():
     return
 
 #10. Cancel personal training session
-def cancelTraining():
+def cancelTraining(id):
+    query = """SELECT ts.scheduleID, t.fName, t.lName, ts.day, ts.startTime, ts.endTime 
+            FROM TrainingSession ts JOIN Trainer t ON ts.trainerID = t.trainerID
+            WHERE memberID = %s"""
+    result = database.executeQuery(query, (id))
+
+    #print out training sessions of the club member
+    for trainingSession in result:
+        print("- - - - - - - - - - - - - - - - - - - -")
+        print("Schedule ID: ", trainingSession[0])
+        print("Trainer: ", trainingSession[1], " ", trainingSession[2])
+        print("Date: ", trainingSession[3])
+        print("Time: ", trainingSession[4], "-", trainingSession[5])
+    
+    print("- - - - - - - - - - - - - - - - - - - -")
+    choice = int(input("Input the schedule ID of the training session to cancel: "))
+
+    query = "DELETE FROM TrainingSession WHERE scheduleID = %s"
+    database.executeQuery(query, (choice))
     return
 
 #11. Participate in class
