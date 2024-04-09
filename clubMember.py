@@ -143,10 +143,19 @@ def displayDashboard(id):
 
 #8. Schedule personal training session
 def scheduleTraining(id):
-    print("- - - - - - - - - - - - - - - - - - - -")
-    choice = int(input("Training ID to schedule with: "))
+    print("~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~")
 
-    query = """INSERT INTO trainingsession """
+    choice = int(input("Input the schedule ID of the training session: "))
+    
+    query = """SELECT trainerID, day, startTime, endTime
+                WHERE availabilityID = %s
+                """
+    result = database.executeQuery(query, (choice))
+    result = result[0]
+    
+    query = """INSERT INTO TrainingSession (memberID, trainerID, day, startTime, endTime)
+                VALUES (%s, %s, %s, %s, %s)"""
+    result = database.executeQuery(query, (id, result[0], result[1], result[2], result[3]))
 
     return
 
@@ -171,6 +180,7 @@ def viewAvailableTrainingSessions():
                 FROM Trainer t JOIN Availabilities a ON t.trainerID = a.trainerID
                 WHERE a.isFree = TRUE"""
     result = database.executeQuery(query)
+    print("~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~")
     for possibleTS in result:
         print("- - - - - - - - - - - - - - - - - - - -")
         print("Schedule ID: ", possibleTS[0])
