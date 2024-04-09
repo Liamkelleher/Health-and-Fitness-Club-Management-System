@@ -18,13 +18,13 @@ CREATE TABLE Dashboard (
 );
 
 CREATE TABLE Achievements (	
-	memberID INT PRIMARY KEY,
+	memberID INT,
 	achievement TEXT,
 	FOREIGN KEY (memberID) REFERENCES Dashboard(memberID)
 );
 
 CREATE TABLE Routines (
-	memberID INT Primary Key,
+	memberID INT,
 	routine TEXT,
 	FOREIGN KEY (memberID) REFERENCES Dashboard(memberID)
 );
@@ -111,7 +111,7 @@ CREATE OR REPLACE FUNCTION createNewUserDashboard()
 RETURNS TRIGGER AS $$
 BEGIN
     INSERT INTO Dashboard (memberID, restHR, weight, height)
-    VALUES (NEW.memberID, NULL, 0.0, 0.0); -- You may adjust the default values as needed
+    VALUES (NEW.memberID, 0, 0, 0);
 RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
