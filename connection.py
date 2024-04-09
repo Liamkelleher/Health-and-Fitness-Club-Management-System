@@ -20,6 +20,15 @@ def connect():
 
 #Add initial data if not included
 def initData():
+    query = """SELECT COUNT(*) FROM ClubMember"""
+    result = executeQuery(query)
+
+    if(result[0][0] == 0):
+        query = """INSERT INTO ClubMember (email, password, fname, lname) VALUES
+                ('bob@cm.com', 'bob', 'Bob', 'Z'),
+                ('bobby@cm.com', 'bobby', 'Bobby', 'Z')
+                """
+        executeQuery(query)
 
     query = """SELECT COUNT(*) FROM trainer"""
     result = executeQuery(query)
@@ -38,8 +47,8 @@ def initData():
 
     if(result[0][0] == 0):
         query = """INSERT INTO admin (email, password, fname, lname) VALUES
-                ('admin1@admin.com', 'admin1', 'Admin', '1')
-                ('admin2@admin.com', 'admin2', 'Admin', '2')
+                ('admin1@admin.com', 'admin1', 'Admin', '1'),
+                ('admin2@admin.com', 'admin2', 'Admin', '2'),
                 ('admin3@admin.com', 'admin3', 'Admin', '3')
                 """
         executeQuery(query)

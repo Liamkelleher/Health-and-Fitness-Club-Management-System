@@ -2,29 +2,41 @@ import connection as database
 #-----MEMBER FUNTIONS-----#
 
 #Add new Club Member
-def registerNewMember():
-
+def registerNewMember(email, password, fName, lName):
+    query = "INSERT INTO ClubMembers (email, password, fName, lName) VALUES(%s, %s, %s, %s);"
+    database.executeQuery(query, (email, password, fName, lName))
     return
 
 #1. Update personal information
 #update email
 def updateEmail(id, newEmail):
+    query = "UPDATE ClubMembers SET email = %s WHERE memberID = %s;"
+    database.executeQuery(query, (newEmail, id))
     return
 
 #update password
 def updatePassword(id, newPassword):
+    query = "UPDATE ClubMembers SET password = %s WHERE memberID = %s;"
+    database.executeQuery(query, (newPassword, id))
     return
 
 #2. add fitness achievements
-def updateAchievements(id, achievement):
+def addAchievements(id, achievement):
+    query = """INSERT INTO Achievements (memberID, achievement)
+                VALUES (%s, %s)"""
+    database.executeQuery(query, (achievement, id))
     return
 
 #3. Update health statistics
-def updateStats(id):
+def updateStats(id, restingHR, weight, height):
+    query = "UPDATE DashBoard SET restingHeartRate = %s, weight = %d, height =%d WHERE memberID=%s"
+    database.executeQuery(query, (restingHR, weight, height, id))
     return
 
-#4. Update health statistics
-def updateGoals(id):
+#4. Update goals
+def updateGoals(id, weightGoal, timeGoal):
+    query = "UPDATE DashBoard SET weightGoal = %d, timeGoal = %d WHERE memberID=%s"
+    database.executeQuery(query, (weightGoal, timeGoal, id))
     return
 
 #5. Display dashboard
@@ -96,6 +108,7 @@ def clubMemberLogin():
         print("7. Reschedule personal training session")
         print("8. Cancel personal training session")
         print("9. Participate in class")
+        print("10. Cancel class")
         operation = int(input("Please choose an operation: "))
 
         match(operation):
@@ -119,7 +132,7 @@ def clubMemberLogin():
                 addAchievements(id, achievement)
 
             case 3:
-                updateStats()
+                updateStats(id, )
 
             case 4:
                 updateGoals()
