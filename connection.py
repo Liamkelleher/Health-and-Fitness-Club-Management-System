@@ -17,6 +17,7 @@ def connect():
 
     return connection, cursor
 
+
 #Add initial data if not included
 def initData():
     query = """SELECT COUNT(*) FROM ClubMember"""
