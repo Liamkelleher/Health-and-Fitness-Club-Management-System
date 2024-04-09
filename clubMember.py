@@ -184,7 +184,6 @@ def scheduleTraining(id):
     query = """INSERT INTO TrainingSession (memberID, trainerID, day, startTime, endTime)
                 VALUES (%s, %s, %s, %s, %s)"""
     result = database.executeQuery(query, (id, result[0], result[1], result[2], result[3]))
-    query = """UPDATE availabities"""
 
     return
 
