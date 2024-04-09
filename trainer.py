@@ -1,7 +1,9 @@
 import connection as database
+import clubMember as clubMember
 
 #-----TRAINER FUNTIONS-----#
 
+# Lists all availabilities for current trainer
 def viewAvailibity(trainerID, trainerName):
     query = """
     SELECT availabilityID, day, startTime, endTime, isFree
@@ -16,6 +18,7 @@ def viewAvailibity(trainerID, trainerName):
         print(f"ID: {day[0]} || Day: {day[1]}, Start Time: {day[2]}, End Time: {day[3]}, Is Free? {day[4]}")
     return
 
+# prompts trainer to enter a new availability block
 def addAvailability(trainerID):
     day = input("Enter Day (YYYY-MM-DD): ")
     startTime = input("Enter Start Time (HH:MM): ") + ":00"
@@ -31,13 +34,24 @@ def addAvailability(trainerID):
     print("Availability updated successfully.")
     return
 
-### ADD AVAILABILITY ID EASIER TO MODIFY/ DELETE
+
+# Trainer can modify availability between 'free' or 'busy'
 def updateAvailability(trainerID, trainerName):
     viewAvailibity(trainerID, trainerName)
 
-    day = input("Enter Day (YYYY-MM-DD): ")
-    startTime = input("Enter Start Time (HH:MM): ") + ":00"
-    endTime = input("Enter End Time (HH:MM): ") + ":00"
+    availability = input("\nSelect availability ID to modify: ")
+
+    # select avilability matching inputted ID
+    query = """
+    SELECT availabilityID, day, startTime, endTime, isFree
+    FROM Availabilities
+    WHERE trainerID = %s AND availabilityID = %s
+    """
+    results = database.executeQuery(query, (trainerID, availability))
+    for result in results:
+        print(f"\nAvailability on {result[1]}, Start Time: {result[2]}, End Time: {result[3]}, Is Free? {result[4]}")
+   
+    print("\nUpdate selected availability below:")
     isFree = (input("Free(1) or Busy(0)? "))
 
     query = """
@@ -48,26 +62,53 @@ def updateAvailability(trainerID, trainerName):
 
     database.executeQuery(query, (isFree, trainerID))
 
-    print("Availability updated successfully.")
+    print("\nAvailability updated successfully.")
     return
 
-def removeAvailability(trainerID):
-    day = input("Enter Day (YYYY-MM-DD): ")
-    startTime = input("Enter Start Time (HH:MM)") + ":00"
-    endTime = input("Enter End Time (HH:MM): ") + ":00"
-    isFree = True
+# trainer can remove selected availability
+def removeAvailability(trainerID, trainerName):
+    viewAvailibity(trainerID, trainerName)
+
+    availability = input("\nSelect availability ID to delete: ")
+
+    # select avilability matching inputted ID
+    query = """
+    SELECT availabilityID, day, startTime, endTime, isFree
+    FROM Availabilities
+    WHERE trainerID = %s AND availabilityID = %s
+    """
+    results = database.executeQuery(query, (trainerID, availability))
+    for result in results:
+        print(f"Selected: Availability on {result[1]}, Start Time: {result[2]}, End Time: {result[3]}, Is Free? {result[4]}")
+    
+    print("\nDeleting....")
 
     query = """
-    INSERT INTO Availabilities (trainerID, day, startTime, endTime, isFree)
-    VALUES (%s, %s, %s, %s, %s)
+    DELETE FROM Availabilities 
+    WHERE trainerID = %s AND availabilityID = %s
     """
+    database.executeQuery(query, (trainerID, availability))
 
-    database.executeQuery(query, (trainerID, day, startTime, endTime, isFree))
-
-    print("Availability removed successfully.")
+    print("\nAvailability deleted successfully.")
     return
 
+# trainer can view a member by name
 def viewMember():
+    query = """
+    SELECT memberid, fname, lname, email
+    FROM ClubMember
+    """
+    results = database.executeQuery(query)
+
+    print(f"\nClub Members:")
+    for member in results:
+        print("-------------------------------------")
+        print(f"Club Member id:{member[0]} Name:{member[1]} {member[2]} Email:{member[3]}")
+
+    selection = input("\nSelect a club member to view (id): ")
+
+    clubMember.displayDashboard(selection)
+
     return
 
 # Log in as Trainer
@@ -109,7 +150,7 @@ def trainerLogin():
     print(f"\nLogin successful.\nWelcome back Trainer # {id}: {fName} {lName}!\n")
 
     while True:
-        print("~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~")
+        print("\n~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~")
         print("0. Log out")
         print("1. View availabity")
         print("2. Add availability")
@@ -133,7 +174,7 @@ def trainerLogin():
                 updateAvailability(id, fName + " " + lName)
         
             case 4:
-                removeAvailability(id)
+                removeAvailability(id, fName + " " + lName)
         
             case 5:
                 viewMember()
