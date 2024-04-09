@@ -207,7 +207,7 @@ def rescheduleTraining(id):
     
     print("- - - - - - - - - - - - - - - - - - - -")
     choiceReschedule = input("Input the schedule ID of the training session to reschedule: ")
-
+    #-----------------------------------------------------------------------------------------
     #show the available training sesssions
     viewAvailableTrainingSessions()
 
@@ -219,14 +219,15 @@ def rescheduleTraining(id):
             FROM availabilities
             WHERE availabilityID = %s"""
     
-    result2 = database.executeQuery(query, (choice,))
-    result2 = result2[0]
+    result = database.executeQuery(query, (choice,))
+    result = result[0]
     
+    #-----------------------------------------------------------------------------------------
     #REWORK THE TRAINING SESSIONS
     #add the training session
     query = """INSERT INTO TrainingSession (memberID, trainerID, day, startTime, endTime)
                 VALUES (%s, %s, %s, %s, %s)"""
-    database.executeQuery(query, (id, result2[0], result2[1], result2[2], result2[3]))
+    database.executeQuery(query, (id, result[0], result[1], result[2], result[3]))
 
     #delete the current training session
     query = "DELETE FROM TrainingSession WHERE scheduleID = %s"
