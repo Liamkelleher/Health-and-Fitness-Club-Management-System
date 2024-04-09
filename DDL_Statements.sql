@@ -10,9 +10,9 @@ CREATE TABLE ClubMember (
 CREATE TABLE Dashboard (
 	memberID SERIAL PRIMARY KEY,
 	restHR INT,
-	weight DECIMAL(5,2) NOT NULL,
-	height DECIMAL(3,2) NOT NULL,
-	weightGoal DECIMAL(5,2),
+	weight INT NOT NULL,
+	height INT NOT NULL,
+	weightGoal INT,
 	timeGoal DATE,
 	FOREIGN KEY (memberID) REFERENCES ClubMember(memberID)
 );
@@ -106,3 +106,17 @@ CREATE TABLE TrainingEquipment (
     name VARCHAR(255),
     status VARCHAR(255)
 );
+
+CREATE OR REPLACE FUNCTION createNewUserDashboard()
+RETURNS TRIGGER AS $$
+BEGIN
+    INSERT INTO Dashboard (memberID, restHR, weight, height)
+    VALUES (NEW.memberID, NULL, 0.0, 0.0); -- You may adjust the default values as needed
+RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER createDashboardTrigger
+AFTER INSERT ON ClubMember
+FOR EACH ROW
+EXECUTE FUNCTION createNewUserDashboard();

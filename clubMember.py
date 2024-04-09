@@ -2,8 +2,16 @@ import connection as database
 #-----MEMBER FUNTIONS-----#
 
 #Add new Club Member
-def registerNewMember(email, password, fName, lName):
-    query = "INSERT INTO ClubMembers (email, password, fName, lName) VALUES(%s, %s, %s, %s);"
+def registerNewMember():
+    print("~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~")
+    print("User registration:\n ")
+
+    email = input("Enter email:      ")
+    password = input("Enter password:   ")
+    fName = input("Enter first name: ")
+    lName = input("Enter last name:  ")
+
+    query = "INSERT INTO ClubMember (email, password, fName, lName) VALUES(%s, %s, %s, %s);"
     database.executeQuery(query, (email, password, fName, lName))
     return
 
@@ -41,6 +49,20 @@ def updateGoals(id, weightGoal, timeGoal):
 
 #5. Display dashboard
 def displayDashboard(id):
+    query = """SELECT * FROM dashboard 
+            WHERE memberid=%s"""
+    result = database.executeQuery(query, (id,))
+    result = result[0]
+    
+    print("~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~")
+    print("Personal Dashboard: \n")
+    print("Member ID:           ", result[0])
+    print("Resting Heart Rate:  ", result[1])
+    print("Current weight:      ", result[2])
+    print("Current height:      ", result[3])
+    print("Current weight goal: ", result[4])
+    print("Current time goal:   ", result[5])
+
     return
 
 #6. Schedule personal training session
@@ -138,7 +160,7 @@ def clubMemberLogin():
                 updateGoals()
 
             case 5:
-                displayDashboard()
+                displayDashboard(id)
 
             case 6:
                 scheduleTraining()
