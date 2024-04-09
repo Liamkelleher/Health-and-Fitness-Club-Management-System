@@ -51,16 +51,21 @@ def updateGoals(id, weightGoal, timeGoal):
     return
 
 #5. Update routines
-def addRoutine(id, routine):
+def addRoutine(id):
+    routine = input("Please enter in your routine: ")
     query = "INSERT INTO Routines (memberID, routine) VALUES (%s, %s)"
     database.executeQuery(query, (id, routine))
     return
 
-#6 Remove routines
-def removeRoutine(id, routine):
+#6. Remove routines
+def removeRoutine(id):
+    routine = input("What routine would you like to remove? ")
+    query = """DELETE from routines
+            WHERE memberid=%s AND routine=%s"""
+    database.executeQuery(query, (id, routine))
     return
 
-#6. Display dashboard
+#7. Display dashboard
 def displayDashboard(id):
     query = """SELECT * FROM dashboard 
             WHERE memberid=%s"""
@@ -98,23 +103,23 @@ def displayDashboard(id):
     return
 
 
-#7. Schedule personal training session
+#8. Schedule personal training session
 def scheduleTraining():
     return
 
-#8. Reschedule personal training session
+#9. Reschedule personal training session
 def rescheduleTraining():
     return
 
-#9. Cancel personal training session
+#10. Cancel personal training session
 def cancelTraining():
     return
 
-#10. Participate in class
+#11. Participate in class
 def participateInClass():
     return
 
-#11. Cancel class
+#12. Cancel class
 def cancelClass():
     return
 
@@ -209,11 +214,10 @@ def clubMemberLogin():
                 updateGoals()
 
             case 5:
-                routine = input("Please enter in your routine: ")
-                addRoutine(id, routine)
+                addRoutine(id)
 
             case 6: 
-                routine = input("What routine would you like to remove? ")
+                removeRoutine(id)
 
             case 7:
                 displayDashboard(id)
