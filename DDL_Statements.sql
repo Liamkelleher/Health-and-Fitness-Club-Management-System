@@ -40,10 +40,9 @@ CREATE TABLE Admin (
 -- one-to-many relationship with ClubMember
 CREATE TABLE Billing (
 	memberID INT PRIMARY KEY,
-	membership VARCHAR(255),
+	membership INT,
 	trainingSession INT,
-	otherServices VARCHAR(255),
-	date DATE,
+	otherServices INT,
 	FOREIGN KEY (memberID) REFERENCES ClubMember(memberID)
 );
 
@@ -67,13 +66,9 @@ CREATE TABLE Availabilities (
 );
 
 CREATE TABLE TrainingSession (
-	scheduleID SERIAL PRIMARY KEY,
+	scheduleID INT,
 	memberID INT,
-	trainerID INT,
-	day DATE,
-	startTime TIME,
-	endTime TIME,
-	FOREIGN KEY (trainerID) REFERENCES Trainer(trainerID),
+	FOREIGN KEY (scheduleID) REFERENCES Availabilities(availabilityID),
 	FOREIGN KEY (memberID) REFERENCES ClubMember(memberID)
 );
 
@@ -90,12 +85,9 @@ CREATE TABLE Class (
 );
 
 -- Many-to-One relation between ClubMember and Class
-CREATE TABLE ParticipantsIn (
-	memberID INT PRIMARY KEY,
+CREATE TABLE ParticipatesIn (
+	memberID INT,
 	classID INT,
-	day DATE,
-	startTime TIME,
-	endTime TIME,
 	FOREIGN KEY (memberID) REFERENCES ClubMember(memberID),
 	FOREIGN KEY (classID) REFERENCES Class(classID)
 );
@@ -107,11 +99,14 @@ CREATE TABLE TrainingEquipment (
     status VARCHAR(255)
 );
 
-CREATE FUNCTION createNewUserDashboard()
+CREATE FUNCTION createNewUser()
 RETURNS TRIGGER AS $$
 BEGIN
-    INSERT INTO Dashboard (memberID, restHR, weight, height)
+    INSERT INTO Dashboard(memberID, restHR, weight, height)
     VALUES (NEW.memberID, 0, 0, 0);
+
+	INSERT INTO Billing(memberID, membership, trainingSession, otherServices)
+	VALUES (NEW.memberID, 40, 0, 0);
 RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
@@ -119,20 +114,23 @@ $$ LANGUAGE plpgsql;
 CREATE TRIGGER createDashboardTrigger
 AFTER INSERT ON ClubMember
 FOR EACH ROW
-EXECUTE FUNCTION createNewUserDashboard();
+EXECUTE FUNCTION createNewUser();
 
 CREATE FUNCTION noLongerFreeAvailibility()
 RETURNS TRIGGER AS $$
 BEGIN
     UPDATE Availabilities
     SET isFree = FALSE
-    WHERE trainerID = NEW.trainerID
-    AND day = NEW.day AND startTime = NEW.startTime AND endTime = NEW.endTime;
+    WHERE availabilityID = NEW.scheduleID;
+
+	UPDATE Billing
+	SET trainingSession = trainingSession+40
+	WHERE memberID = NEW.memberID;
 RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE TRIGGER noFreetrigger
+CREATE TRIGGER noLongerFreeTrigger
 AFTER INSERT ON TrainingSession
 FOR EACH ROW
 EXECUTE FUNCTION noLongerFreeAvailibility();
@@ -142,16 +140,47 @@ RETURNS TRIGGER AS $$
 BEGIN
     UPDATE Availabilities
     SET isFree = TRUE
-    WHERE trainerID = OLD.trainerID
-    AND day = OLD.day
-    AND startTime = OLD.startTime
-    AND endTime = OLD.endTime;
-    
+    WHERE availabilityID = OLD.scheduleID;
 RETURN OLD;
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE TRIGGER freeTrigger
+CREATE TRIGGER freeAvailabilityTrigger
 AFTER DELETE ON TrainingSession
 FOR EACH ROW
 EXECUTE FUNCTION freeAvailability();
+
+CREATE FUNCTION participateInClass()
+RETURNS TRIGGER AS $$
+BEGIN
+	UPDATE Class
+	SET spots = spots-1
+	WHERE classID = NEW.classID;
+
+	UPDATE Billing
+	SET otherServices = otherServices+20
+	WHERE memberID = NEW.memberID;
+RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER participateInClassTrigger
+AFTER INSERT ON ParticipatesIn
+FOR EACH ROW
+EXECUTE FUNCTION participateInClass();
+
+CREATE FUNCTION cancelClass()
+RETURNS TRIGGER AS $$
+BEGIN
+	UPDATE Class
+	SET spots = spots+1
+	WHERE classID = OLD.classID;
+RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER cancelClassTrigger
+AFTER DELETE ON ParticipatesIn
+FOR EACH ROW
+EXECUTE FUNCTION cancelClass();
+

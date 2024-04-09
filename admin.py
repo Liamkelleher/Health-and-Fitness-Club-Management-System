@@ -143,6 +143,9 @@ def viewClasses():
     return
 
 def processingBilling():
+    query = """UPDATE billing
+            SET trainingsession=0, otherservices=0"""
+    database.executeQuery(query)
     return
 
 def verification(): 

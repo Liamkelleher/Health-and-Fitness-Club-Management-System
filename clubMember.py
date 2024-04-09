@@ -125,7 +125,8 @@ def displayDashboard(id):
             WHERE memberid=%s"""
     result = database.executeQuery(query, (id,))
 
-    print("\nAchievements: ")
+    print("- - - - - - - - - - - - - - - - - - - -")
+    print("Achievements: \n")
     for achievement in result:
         print(" -", achievement[0])
 
@@ -133,24 +134,56 @@ def displayDashboard(id):
     query = """SELECT routine FROM routines
             WHERE memberid=%s"""
     result = database.executeQuery(query, (id,))
-    print("\nRoutines: ")
+    print("- - - - - - - - - - - - - - - - - - - -")
+    print("Routines: \n")
     for routine in result:
         print(" -", routine[0])
 
-    #Display schedule
-    query = """SELECT s.scheduleid, t.fName, t.lName, s.day, s.startTime, s.endTime
-                FROM Trainer t JOIN trainingsession s ON t.trainerID = s.trainerID
-                WHERE s.memberid=%s
-                ORDER BY s.day ASC"""
+    #Display billing
+    query = """SELECT membership, trainingsession, otherservices 
+            FROM billing
+            WHERE memberid=%s"""
     result = database.executeQuery(query, (id,))
-    print("\nSchedule: ")
+    result = result[0]
+    print("- - - - - - - - - - - - - - - - - - - -")
+    print("Billing: \n")
+    print("Monthly:           " + "$" + str(result[0]))
+    print("Training Sessions: " + "$" + str(result[1]))
+    print("Other services:    " + "$" + str(result[2]))
+
+    #Display schedule
+    
+    query = """SELECT s.scheduleid, t.fName, t.lName, a.day, a.startTime, a.endTime
+            FROM trainer t JOIN availabilities a ON t.trainerid=a.trainerid
+            JOIN trainingsession s ON s.scheduleid=a.availabilityid
+            WHERE s.memberid=%s"""
+    
+    result = database.executeQuery(query, (id,))
+    print("- - - - - - - - - - - - - - - - - - - -")
+    print("Training Sessions: ")
     for schedule in result:
         print("Schedule ID:  ", schedule[0])
         print("Trainer name: ", schedule[1] + " " + schedule[2])
         print("Date:         ", schedule[3])
         print("Time:         ", schedule[4], "-", schedule[5])
         print()
-
+    
+    #Display classes
+    query = """SELECT c.classid, c.roomNum, c.day, c.startTime, c.endTime
+            FROM class c JOIN participatesIn p 
+            ON c.classid=p.classid
+            WHERE p.memberid=%s
+            ORDER BY c.day ASC"""
+    result = database.executeQuery(query, (id,))
+    print("- - - - - - - - - - - - - - - - - - - -")
+    print("Classes: ")
+    for classes in result:
+        print("Class ID: ", classes[0])
+        print("Room #:   ", classes[1])
+        print("Date:     ", classes[2])
+        print("Type:     ", classes[3])
+        print("Time:     ", classes[4], "-", classes[5])
+        print()
     return
 
 
@@ -172,18 +205,11 @@ def viewAvailableTrainingSessions():
 def scheduleTraining(id):
     print("~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~")
 
-    choice = int(input("Input the schedule ID of the training session: "))
+    choice = input("Input the schedule ID of the training session: ")
     
-    query = """SELECT trainerid, day, startTime, endTime 
-            FROM availabilities
-            WHERE availabilityID = %s"""
-    
-    result = database.executeQuery(query, (choice,))
-    result = result[0]
-    
-    query = """INSERT INTO TrainingSession (memberID, trainerID, day, startTime, endTime)
-                VALUES (%s, %s, %s, %s, %s)"""
-    database.executeQuery(query, (id, result[0], result[1], result[2], result[3]))
+    query = """INSERT INTO TrainingSession(scheduleid, memberid) VALUES
+            (%s, %s)"""
+    database.executeQuery(query, (choice, id))
 
     return
 
@@ -253,18 +279,68 @@ def cancelTraining(id):
         print("Time: ", trainingSession[4], "-", trainingSession[5])
     
     print("- - - - - - - - - - - - - - - - - - - -")
-    choice = int(input("Input the schedule ID of the training session to cancel: "))
+    choice = int(input("Input the ID of the training session to cancel: "))
 
     query = "DELETE FROM TrainingSession WHERE scheduleID = %s"
     database.executeQuery(query, (choice,))
     return
 
 #11. Participate in class
-def participateInClass():
+def participateInClass(id):
+    query = """SELECT c.classID, c.roomNum, c.spots, c.type, c.day, c.startTime, c.endTime
+            FROM Class c
+            LEFT JOIN ParticipatesIn p ON c.classID = p.classID AND p.memberID = %s
+            WHERE p.memberID IS NULL and spots>0"""
+    result = database.executeQuery(query, (id,))
+
+    print("~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~")
+    if(len(result) == 0):
+        print("\nNo classes available\n")
+        return
+    
+    print("\nAvailable Classes:")
+    for classes in result:
+        print("Class ID: ", classes[0])
+        print("Room #:   ", classes[1])
+        print("Date:     ", classes[2])
+        print("Time:     ", classes[3], "-", classes[4])
+        print()
+
+    print("- - - - - - - - - - - - - - - - - - - -")
+    choice = input("Input the ID of the class you would like to join: ")
+
+    query = """INSERT INTO participatesin (memberID, classID)
+            VALUES (%s, %s)"""
+    
+    database.executeQuery(query, (id, choice))
+
     return
 
 #12. Cancel class
-def cancelClass():
+def cancelClass(id):
+    query = """SELECT c.classid, c.roomNum, c.day, c.startTime, c.endTime
+            FROM class c JOIN participatesIn p 
+            ON c.classid=p.classid
+            WHERE p.memberid=%s
+            ORDER BY c.day ASC"""
+    result = database.executeQuery(query, (id,))
+    print("~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~")
+    print("Classes: ")
+    for classes in result:
+        print("Class ID: ", classes[0])
+        print("Room #:   ", classes[1])
+        print("Date:     ", classes[2])
+        print("Type:     ", classes[3])
+        print("Time:     ", classes[4], "-", classes[5])
+        print()
+
+    print("- - - - - - - - - - - - - - - - - - - -")
+    choice = int(input("Input the ID of the class to cancel: "))
+
+    query = """DELETE FROM participatesin 
+            WHERE classid=%s AND memberid=%s"""
+    database.executeQuery(query, (choice, id))
+    
     return
 
 def verification():
@@ -365,10 +441,10 @@ def clubMemberLogin():
                 cancelTraining(id)
 
             case 11:
-                participateInClass()
+                participateInClass(id)
             
             case 12:
-                cancelClass()
+                cancelClass(id)
 
                 
                   
