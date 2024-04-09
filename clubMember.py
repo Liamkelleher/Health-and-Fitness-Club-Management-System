@@ -18,6 +18,7 @@ def registerNewMember():
 #1. Update personal information
 #update email
 def updateEmail(id):
+    print("~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~")
     newEmail = input("Please input your new email")
     query = "UPDATE ClubMembers SET email = %s WHERE memberID = %s;"
     database.executeQuery(query, (newEmail, id))
@@ -25,6 +26,7 @@ def updateEmail(id):
 
 #update password
 def updatePassword(id):
+    print("~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~")
     newPassword = input("Please input your new password")
     query = "UPDATE ClubMembers SET password = %s WHERE memberID = %s;"
     database.executeQuery(query, (newPassword, id))
@@ -32,6 +34,7 @@ def updatePassword(id):
 
 #2. add fitness achievements
 def addAchievements(id):
+    print("~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~")
     achievement = input("Input your new achievement! ")
     query = """INSERT INTO Achievements (memberID, achievement)
                 VALUES (%s, %s)"""
@@ -76,6 +79,7 @@ def updateStats(id):
 
 #4. Update goals
 def updateGoals(id):
+    print("~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~")
     weightGoal = input("What is your new weight goal?                           ")
     timeGoal = input("What day do you want to achieve this goal (YYYY-MM-DD)? ")
     query = "UPDATE DashBoard SET weightGoal = %s, timeGoal = %s WHERE memberID=%s"
@@ -84,6 +88,7 @@ def updateGoals(id):
 
 #5. Update routines
 def addRoutine(id):
+    print("~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~")
     routine = input("Please enter in your routine: ")
     query = "INSERT INTO Routines (memberID, routine) VALUES (%s, %s)"
     database.executeQuery(query, (id, routine))
@@ -91,6 +96,7 @@ def addRoutine(id):
 
 #6. Remove routines
 def removeRoutine(id):
+    print("~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~")
     routine = input("What routine would you like to remove? ")
     query = """DELETE from routines
             WHERE memberid=%s AND routine=%s"""
@@ -136,9 +142,12 @@ def displayDashboard(id):
 
 
 #8. Schedule personal training session
-def scheduleTraining(id, option):
-    choice = int(input("type in the training session option number: ")) - 1
-    result = option[choice]
+def scheduleTraining(id):
+    print("- - - - - - - - - - - - - - - - - - - -")
+    choice = int(input("Training ID to schedule with: "))
+
+    query = """INSERT INTO trainingsession """
+
     return
 
 #9. Reschedule personal training session
@@ -157,22 +166,17 @@ def participateInClass():
 def cancelClass():
     return
 
-
 def viewAvailableTrainingSessions():
-    query = """SELECT t.fName, t.lName, a.day, a.startTime, a.endTime
+    query = """SELECT a.availabilityID, t.fName, t.lName, a.day, a.startTime, a.endTime
                 FROM Trainer t JOIN Availabilities a ON t.trainerID = a.trainerID
-                WHERE a.isFree = TRUE
-                GROUP BY t.fName, t.lName, a.isFree, a.day, a.startTime, a.endTime"""
+                WHERE a.isFree = TRUE"""
     result = database.executeQuery(query)
     for possibleTS in result:
-        i = 1
         print("- - - - - - - - - - - - - - - - - - - -")
-        print("Available option: ", i)
-        print("Trainer: ", possibleTS[0], " ", possibleTS[1])
-        print("Date: ", possibleTS[2])
-        print("Time: ", possibleTS[3], "-", possibleTS[4])
-        i += 1
-    return result
+        print("Schedule ID: ", possibleTS[0])
+        print("Trainer: ", possibleTS[1], " ", possibleTS[2])
+        print("Date: ", possibleTS[3])
+        print("Time: ", possibleTS[4], "-", possibleTS[5])
 
 def verification():
 
@@ -261,9 +265,9 @@ def clubMemberLogin():
                 displayDashboard(id)
 
             case 8:
-                option = viewAvailableTrainingSessions()
+                viewAvailableTrainingSessions()
                 
-                scheduleTraining(id, option)
+                scheduleTraining(id)
 
             case 9:
                 rescheduleTraining()
