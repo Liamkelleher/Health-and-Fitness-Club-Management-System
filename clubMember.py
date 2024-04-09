@@ -183,7 +183,7 @@ def scheduleTraining(id):
     
     query = """INSERT INTO TrainingSession (memberID, trainerID, day, startTime, endTime)
                 VALUES (%s, %s, %s, %s, %s)"""
-    result = database.executeQuery(query, (id, result[0], result[1], result[2], result[3]))
+    database.executeQuery(query, (id, result[0], result[1], result[2], result[3]))
 
     return
 
@@ -193,7 +193,7 @@ def rescheduleTraining(id):
     query = """SELECT ts.scheduleID, t.fName, t.lName, ts.day, ts.startTime, ts.endTime 
             FROM TrainingSession ts JOIN Trainer t ON ts.trainerID = t.trainerID
             WHERE memberID = %s"""
-    result = database.executeQuery(query, (id))
+    result = database.executeQuery(query, (id,))
 
     print("~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~")
     print("Training Sessions: \n")
@@ -206,7 +206,7 @@ def rescheduleTraining(id):
         print("Time: ", trainingSession[4], "-", trainingSession[5])
     
     print("- - - - - - - - - - - - - - - - - - - -")
-    choiceReschedule = int(input("Input the schedule ID of the training session to reschedule: "))
+    choiceReschedule = input("Input the schedule ID of the training session to reschedule: ")
 
     #show the available training sesssions
     viewAvailableTrainingSessions()
@@ -222,11 +222,15 @@ def rescheduleTraining(id):
     result2 = database.executeQuery(query, (choice,))
     result2 = result2[0]
     
-    #update the training session
-    query = """UPDATE TrainingSession
-                SET trainerID = %s, day = %s, startTime = %s, endTime = %s
-                WHERE scheduleID = %s"""
-    database.executeQuery(query, (result2[0], result2[1], result2[2], result2[3]))
+    #REWORK THE TRAINING SESSIONS
+    #add the training session
+    query = """INSERT INTO TrainingSession (memberID, trainerID, day, startTime, endTime)
+                VALUES (%s, %s, %s, %s, %s)"""
+    database.executeQuery(query, (id, result2[0], result2[1], result2[2], result2[3]))
+
+    #delete the current training session
+    query = "DELETE FROM TrainingSession WHERE scheduleID = %s"
+    database.executeQuery(query, (choiceReschedule,))
 
     return
 
