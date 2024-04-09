@@ -2,7 +2,7 @@ import connection as database
 import clubMember as clubMember
 
 #-----TRAINER FUNTIONS-----#
-
+#* -----------------------------------------------------------------------------------
 # Lists all availabilities for current trainer
 def viewAvailibity(trainerID, trainerName):
     query = """
@@ -18,6 +18,7 @@ def viewAvailibity(trainerID, trainerName):
         print(f"ID: {day[0]} || Day: {day[1]}, Start Time: {day[2]}, End Time: {day[3]}, Is Free? {day[4]}")
     return
 
+#* -----------------------------------------------------------------------------------
 # prompts trainer to enter a new availability block
 def addAvailability(trainerID):
     day = input("Enter Day (YYYY-MM-DD): ")
@@ -34,7 +35,7 @@ def addAvailability(trainerID):
     print("Availability updated successfully.")
     return
 
-
+#* -----------------------------------------------------------------------------------
 # Trainer can modify availability between 'free' or 'busy'
 def updateAvailability(trainerID, trainerName):
     viewAvailibity(trainerID, trainerName)
@@ -65,6 +66,7 @@ def updateAvailability(trainerID, trainerName):
     print("\nAvailability updated successfully.")
     return
 
+#* -----------------------------------------------------------------------------------
 # trainer can remove selected availability
 def removeAvailability(trainerID, trainerName):
     viewAvailibity(trainerID, trainerName)
@@ -92,6 +94,7 @@ def removeAvailability(trainerID, trainerName):
     print("\nAvailability deleted successfully.")
     return
 
+#* -----------------------------------------------------------------------------------
 # trainer can view a member by name
 def viewMember():
     query = """
@@ -111,6 +114,7 @@ def viewMember():
 
     return
 
+#* -----------------------------------------------------------------------------------
 # Log in as Trainer
 def verification():
 
@@ -136,6 +140,7 @@ def verification():
 
     return
 
+#* -----------------------------------------------------------------------------------
 def trainerLogin():
 
     #Check if admin in the system
