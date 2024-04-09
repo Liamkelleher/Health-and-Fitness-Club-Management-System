@@ -125,16 +125,16 @@ def trainerLogin():
                 break
 
             case 1:
-                viewAvailibity(trainerID, trainerName)
+                viewAvailibity(id, fName + " " + lName)
                 
             case 2:
-                addAvailability(trainerID)
+                addAvailability(id)
             
             case 3:
-                updateAvailability(trainerID, trainerName)
+                updateAvailability(id, fName + " " + lName)
         
             case 4:
-                removeAvailability(trainerID)
+                removeAvailability(id)
         
             case 5:
                 viewMember()

@@ -102,16 +102,11 @@ def displayDashboard(id):
 
     return
 
-<<<<<<< HEAD
 
 #8. Schedule personal training session
-def scheduleTraining():
-=======
-#6. Schedule personal training session
 def scheduleTraining(id, option):
     choice = int(input("type in the training session option number: ")) - 1
     result = option[choice]
->>>>>>> 3b0301bdfcee8f58bb50b92e28fa5f85e5fbea7d
     return
 
 #9. Reschedule personal training session
@@ -233,7 +228,7 @@ def clubMemberLogin():
             case 7:
                 displayDashboard(id)
 
-            case 6:
+            case 8:
                 option = viewAvailableTrainingSessions()
                 
                 scheduleTraining(id, option)
