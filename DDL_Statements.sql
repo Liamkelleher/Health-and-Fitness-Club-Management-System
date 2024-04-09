@@ -132,7 +132,26 @@ RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE TRIGGER update_availabilities_trigger
+CREATE TRIGGER noFreetrigger
 AFTER INSERT ON TrainingSession
 FOR EACH ROW
 EXECUTE FUNCTION noLongerFreeAvailibility();
+
+CREATE FUNCTION freeAvailability()
+RETURNS TRIGGER AS $$
+BEGIN
+    UPDATE Availabilities
+    SET isFree = TRUE
+    WHERE trainerID = OLD.trainerID
+    AND day = OLD.day
+    AND startTime = OLD.startTime
+    AND endTime = OLD.endTime;
+    
+RETURN OLD;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER freeTrigger
+AFTER DELETE ON TrainingSession
+FOR EACH ROW
+EXECUTE FUNCTION freeAvailability();
