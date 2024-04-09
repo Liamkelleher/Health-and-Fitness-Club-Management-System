@@ -39,13 +39,45 @@ def addAchievements(id):
     return
 
 #3. Update health statistics
-def updateStats(id, restingHR, weight, height):
-    query = "UPDATE Dashboard SET restingHeartRate = %s, weight = %s, height =%s WHERE memberID=%s"
-    database.executeQuery(query, (restingHR, weight, height, id))
+def updateStats(id):
+    while True:
+        print("~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~")
+        print("0. Quit")
+        print("1. Resting heart rate")
+        print("2. Weight")
+        print("3. Height")
+        operation = int(input("What would you like to change? "))
+
+        match(operation):
+            case 0:
+                break
+
+            case 1:
+                resthr = input("\nNew resting heart rate: ")
+                query = """UPDATE dashboard 
+                        SET resthr=%s
+                        WHERE memberid=%s"""
+                database.executeQuery(query, (resthr, id))
+            case 2: 
+                weight = input("\nNew weight (lbs): ")
+                query = """UPDATE dashboard 
+                        SET weight=%s
+                        WHERE memberid=%s"""
+                database.executeQuery(query, (weight, id))
+
+            case 3:
+                height = input("\nNew height (cm): ")
+                query = """UPDATE dashboard 
+                        SET height=%s
+                        WHERE memberid=%s"""
+                database.executeQuery(query, (height, id))
+
     return
 
 #4. Update goals
-def updateGoals(id, weightGoal, timeGoal):
+def updateGoals(id):
+    weightGoal = input("What is your new weight goal?                           ")
+    timeGoal = input("What day do you want to achieve this goal (YYYY-MM-DD)? ")
     query = "UPDATE DashBoard SET weightGoal = %s, timeGoal = %s WHERE memberID=%s"
     database.executeQuery(query, (weightGoal, timeGoal, id))
     return
@@ -217,7 +249,7 @@ def clubMemberLogin():
                 updateStats(id,)
 
             case 4:
-                updateGoals()
+                updateGoals(id,)
 
             case 5:
                 addRoutine(id)
