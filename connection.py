@@ -18,6 +18,7 @@ def connect():
     return connection, cursor
 
 
+
 #Add initial data if not included
 def initData():
 
@@ -38,8 +39,8 @@ def initData():
 
     if(result[0][0] == 0):
         query = """INSERT INTO admin (email, password, fname, lname) VALUES
-                ('admin1@admin.com', 'admin1', 'Admin', '1')
-                ('admin2@admin.com', 'admin2', 'Admin', '2')
+                ('admin1@admin.com', 'admin1', 'Admin', '1'),
+                ('admin2@admin.com', 'admin2', 'Admin', '2'),
                 ('admin3@admin.com', 'admin3', 'Admin', '3')
                 """
         executeQuery(query)
