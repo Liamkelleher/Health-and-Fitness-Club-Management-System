@@ -201,7 +201,7 @@ def rescheduleTraining(id):
     for trainingSession in result:
         print("- - - - - - - - - - - - - - - - - - - -")
         print("Schedule ID: ", trainingSession[0])
-        print("Trainer: ", trainingSession[1], " ", trainingSession[2])
+        print("Trainer: ", trainingSession[1] + " " + trainingSession[2])
         print("Date: ", trainingSession[3])
         print("Time: ", trainingSession[4], "-", trainingSession[5])
     
