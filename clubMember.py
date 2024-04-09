@@ -37,13 +37,13 @@ def addAchievements(id, achievement):
 
 #3. Update health statistics
 def updateStats(id, restingHR, weight, height):
-    query = "UPDATE DashBoard SET restingHeartRate = %s, weight = %d, height =%d WHERE memberID=%s"
+    query = "UPDATE DashBoard SET restingHeartRate = %s, weight = %s, height =%s WHERE memberID=%s"
     database.executeQuery(query, (restingHR, weight, height, id))
     return
 
 #4. Update goals
 def updateGoals(id, weightGoal, timeGoal):
-    query = "UPDATE DashBoard SET weightGoal = %d, timeGoal = %d WHERE memberID=%s"
+    query = "UPDATE DashBoard SET weightGoal = %s, timeGoal = %s WHERE memberID=%s"
     database.executeQuery(query, (weightGoal, timeGoal, id))
     return
 
@@ -80,6 +80,28 @@ def cancelTraining():
 #9. Participate in class
 def participateInClass():
     return
+
+#10. Cancel class
+def cancelClass():
+    return
+
+#11 update routines
+def addRoutine(id, routine):
+    query = "INSERT INTO Routines (memberID, routine) VALUES (%s, %s)"
+    database.executeQuery(query, (id, routine))
+    return
+
+def viewAvailableTrainingSessions():
+    query = """SELECT t.fName, t.lName, a.day, a.startTime, a.endTime
+                FROM Trainer t JOIN Availabilities a ON t.trainerID = a.trainerID
+                WHERE a.isFree = TRUE
+                GROUP BY t.fName, t.lName, a.isFree, a.day, a.startTime, a.endTime"""
+    result = database.executeQuery(query)
+    for possibleTS in result:
+        print("- - - - - - - - - - - - - - - - - - - -")
+        print("Trainer: ", possibleTS[0], " ", possibleTS[1])
+        print("Date: ", possibleTS[2])
+        print("Time: ", possibleTS[3], "-", possibleTS[4])
 
 def verification():
 
@@ -163,6 +185,8 @@ def clubMemberLogin():
                 displayDashboard(id)
 
             case 6:
+                viewAvailableTrainingSessions()
+                
                 scheduleTraining()
 
             case 7:
@@ -173,4 +197,11 @@ def clubMemberLogin():
 
             case 9:
                 participateInClass()
+            
+            case 10:
+                cancelClass()
+
+            case 11:
+                routine = input("please enter in your routine: ")
+                addRoutine(id, routine)
                   
