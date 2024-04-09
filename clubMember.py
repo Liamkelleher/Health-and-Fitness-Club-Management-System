@@ -102,9 +102,16 @@ def displayDashboard(id):
 
     return
 
+<<<<<<< HEAD
 
 #8. Schedule personal training session
 def scheduleTraining():
+=======
+#6. Schedule personal training session
+def scheduleTraining(id, option):
+    choice = int(input("type in the training session option number: ")) - 1
+    result = option[choice]
+>>>>>>> 3b0301bdfcee8f58bb50b92e28fa5f85e5fbea7d
     return
 
 #9. Reschedule personal training session
@@ -131,10 +138,14 @@ def viewAvailableTrainingSessions():
                 GROUP BY t.fName, t.lName, a.isFree, a.day, a.startTime, a.endTime"""
     result = database.executeQuery(query)
     for possibleTS in result:
+        i = 1
         print("- - - - - - - - - - - - - - - - - - - -")
+        print("Available option: ", i)
         print("Trainer: ", possibleTS[0], " ", possibleTS[1])
         print("Date: ", possibleTS[2])
         print("Time: ", possibleTS[3], "-", possibleTS[4])
+        i += 1
+    return result
 
 def verification():
 
@@ -222,10 +233,10 @@ def clubMemberLogin():
             case 7:
                 displayDashboard(id)
 
-            case 8:
-                viewAvailableTrainingSessions()
+            case 6:
+                option = viewAvailableTrainingSessions()
                 
-                scheduleTraining()
+                scheduleTraining(id, option)
 
             case 9:
                 rescheduleTraining()
