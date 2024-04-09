@@ -188,7 +188,46 @@ def scheduleTraining(id):
     return
 
 #9. Reschedule personal training session
-def rescheduleTraining():
+def rescheduleTraining(id):
+    #show current training sessions
+    query = """SELECT ts.scheduleID, t.fName, t.lName, ts.day, ts.startTime, ts.endTime 
+            FROM TrainingSession ts JOIN Trainer t ON ts.trainerID = t.trainerID
+            WHERE memberID = %s"""
+    result = database.executeQuery(query, (id))
+
+    print("~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~")
+    print("Training Sessions: \n")
+    #print out training sessions of the club member
+    for trainingSession in result:
+        print("- - - - - - - - - - - - - - - - - - - -")
+        print("Schedule ID: ", trainingSession[0])
+        print("Trainer: ", trainingSession[1], " ", trainingSession[2])
+        print("Date: ", trainingSession[3])
+        print("Time: ", trainingSession[4], "-", trainingSession[5])
+    
+    print("- - - - - - - - - - - - - - - - - - - -")
+    choiceReschedule = int(input("Input the schedule ID of the training session to reschedule: "))
+
+    #show the available training sesssions
+    viewAvailableTrainingSessions()
+
+    #ask club member which new training session they would like to take instead
+    print("~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~")
+    choice = int(input("Input the schedule ID of the new training session: "))
+    
+    query = """SELECT trainerid, day, startTime, endTime 
+            FROM availabilities
+            WHERE availabilityID = %s"""
+    
+    result2 = database.executeQuery(query, (choice,))
+    result2 = result2[0]
+    
+    #update the training session
+    query = """UPDATE TrainingSession
+                SET trainerID = %s, day = %s, startTime = %s, endTime = %s
+                WHERE scheduleID = %s"""
+    database.executeQuery(query, (result2[0], result2[1], result2[2], result2[3]))
+
     return
 
 #10. Cancel personal training session
@@ -198,6 +237,8 @@ def cancelTraining(id):
             WHERE memberID = %s"""
     result = database.executeQuery(query, (id))
 
+    print("~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~")
+    print("Training Sessions: \n")
     #print out training sessions of the club member
     for trainingSession in result:
         print("- - - - - - - - - - - - - - - - - - - -")
@@ -313,10 +354,10 @@ def clubMemberLogin():
                 scheduleTraining(id)
 
             case 9:
-                rescheduleTraining()
+                rescheduleTraining(id)
 
             case 10:
-                cancelTraining()
+                cancelTraining(id)
 
             case 11:
                 participateInClass()
