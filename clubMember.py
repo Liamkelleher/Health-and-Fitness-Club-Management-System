@@ -136,9 +136,21 @@ def displayDashboard(id):
 
 
 #8. Schedule personal training session
-def scheduleTraining(id, option):
-    choice = int(input("type in the training session option number: ")) - 1
-    result = option[choice]
+def scheduleTraining(id):
+    print("- - - - - - - - - - - - - - - - - - - -")
+    choice = int(input("Input the schedule ID of the training session: "))
+    
+    query = """SELECT trainerID, day, startTime, endTime
+                WHERE availabilityID = %s
+                """
+    result = database.executeQuery(query, (choice))
+    result = result[0]
+    
+    query = """INSERT INTO TrainingSession (memberID, trainerID, day, startTime, endTime)
+                VALUES (%s, %s, %s, %s, %s)"""
+    result = database.executeQuery(query, (id, result[0], result[1], result[2], result[3]))
+
+
     return
 
 #9. Reschedule personal training session
@@ -158,21 +170,18 @@ def cancelClass():
     return
 
 
+
 def viewAvailableTrainingSessions():
-    query = """SELECT t.fName, t.lName, a.day, a.startTime, a.endTime
+    query = """SELECT a.availabilityID AS scheduleID, t.fName, t.lName, a.day, a.startTime, a.endTime
                 FROM Trainer t JOIN Availabilities a ON t.trainerID = a.trainerID
-                WHERE a.isFree = TRUE
-                GROUP BY t.fName, t.lName, a.isFree, a.day, a.startTime, a.endTime"""
+                WHERE a.isFree = TRUE"""
     result = database.executeQuery(query)
     for possibleTS in result:
-        i = 1
         print("- - - - - - - - - - - - - - - - - - - -")
-        print("Available option: ", i)
-        print("Trainer: ", possibleTS[0], " ", possibleTS[1])
-        print("Date: ", possibleTS[2])
-        print("Time: ", possibleTS[3], "-", possibleTS[4])
-        i += 1
-    return result
+        print("Schedule ID: ", possibleTS[0])
+        print("Trainer: ", possibleTS[1], " ", possibleTS[2])
+        print("Date: ", possibleTS[3])
+        print("Time: ", possibleTS[4], "-", possibleTS[5])
 
 def verification():
 
@@ -261,9 +270,9 @@ def clubMemberLogin():
                 displayDashboard(id)
 
             case 8:
-                option = viewAvailableTrainingSessions()
+                viewAvailableTrainingSessions()
                 
-                scheduleTraining(id, option)
+                scheduleTraining(id)
 
             case 9:
                 rescheduleTraining()
