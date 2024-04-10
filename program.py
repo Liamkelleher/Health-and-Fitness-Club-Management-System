@@ -5,8 +5,6 @@ import admin as admin
 
 #-----MAIN FLOW-----#
 
-connect.initData()
-
 while True:
 
     print("~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~")
