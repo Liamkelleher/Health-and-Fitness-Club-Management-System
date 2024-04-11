@@ -99,6 +99,7 @@ CREATE TABLE TrainingEquipment (
     status VARCHAR(255)
 );
 
+-----------------------------
 CREATE FUNCTION createNewUser()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -116,6 +117,7 @@ AFTER INSERT ON ClubMember
 FOR EACH ROW
 EXECUTE FUNCTION createNewUser();
 
+-----------------------------
 CREATE FUNCTION noLongerFreeAvailibility()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -135,6 +137,7 @@ AFTER INSERT ON TrainingSession
 FOR EACH ROW
 EXECUTE FUNCTION noLongerFreeAvailibility();
 
+-----------------------------
 CREATE FUNCTION freeAvailability()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -150,6 +153,7 @@ AFTER DELETE ON TrainingSession
 FOR EACH ROW
 EXECUTE FUNCTION freeAvailability();
 
+-----------------------------
 CREATE FUNCTION participateInClass()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -169,6 +173,7 @@ AFTER INSERT ON ParticipatesIn
 FOR EACH ROW
 EXECUTE FUNCTION participateInClass();
 
+-----------------------------
 CREATE FUNCTION cancelClass()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -184,3 +189,32 @@ AFTER DELETE ON ParticipatesIn
 FOR EACH ROW
 EXECUTE FUNCTION cancelClass();
 
+-----------------------------
+CREATE FUNCTION removeClass()0
+RETURNS TRIGGER AS $$
+BEGIN 
+	DELETE FROM ParticipatesIn
+	WHERE classID = OLD.classID;
+RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER removeClassTrigger
+BEFORE DELETE ON Class
+FOR EACH ROW
+EXECUTE FUNCTION removeClass();
+
+-----------------------------
+CREATE FUNCTION removeSchedule()
+RETURNS TRIGGER AS $$
+BEGIN 
+	DELETE FROM TrainingSession
+	WHERE scheduleID=OLD.availabilityID;
+RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER removeScheduleTrigger
+BEFORE DELETE ON Availabilities
+FOR EACH ROW
+EXECUTE FUNCTION removeSchedule();

@@ -4,6 +4,8 @@ import connection as database
 
 def manageBookings():
 
+    viewClasses()
+
     #Get id and room number to update to
     id = input("Class ID to update? ")
     roomNum = input("New room number:    ")
@@ -91,6 +93,8 @@ def updateClass():
     operation = input("Please choose an operation: ")
     print()
 
+    viewClasses()
+
     #Change time
     if(operation == '1'):
 
@@ -124,7 +128,7 @@ def viewClasses():
 
     #Get classes
     query = """SELECT * from Class
-            ORDER BY day ASC"""
+            ORDER BY day, startTime ASC"""
     results = database.executeQuery(query)
 
     print("~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~")

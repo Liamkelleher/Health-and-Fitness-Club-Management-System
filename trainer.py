@@ -9,6 +9,7 @@ def viewAvailibity(trainerID, trainerName):
     SELECT availabilityID, day, startTime, endTime, isFree
     FROM Availabilities
     WHERE trainerID = %s
+    ORDER BY day, startTime ASC
     """
     results = database.executeQuery(query, (trainerID,))
 
@@ -46,22 +47,22 @@ def updateAvailability(trainerID, trainerName):
     query = """
     SELECT availabilityID, day, startTime, endTime, isFree
     FROM Availabilities
-    WHERE trainerID = %s AND availabilityID = %s
+    WHERE availabilityID = %s
     """
-    results = database.executeQuery(query, (trainerID, availability))
+    results = database.executeQuery(query, (availability,))
     for result in results:
         print(f"\nAvailability on {result[1]}, Start Time: {result[2]}, End Time: {result[3]}, Is Free? {result[4]}")
    
-    print("\nUpdate selected availability below:")
-    isFree = (input("Free(1) or Busy(0)? "))
+    sTime = input("New start time (HH:MM): ") + ":00"
+    eTime = input("New end time (HH:MM):   ") + ":00"
 
     query = """
     UPDATE Availabilities 
-    SET isFree = %s
-    WHERE trainerID = %s
+    SET startTime = %s, endTime = %s
+    WHERE availabilityId = %s
     """
 
-    database.executeQuery(query, (isFree, trainerID))
+    database.executeQuery(query, (sTime, eTime, availability))
 
     print("\nAvailability updated successfully.")
     return

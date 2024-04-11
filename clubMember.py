@@ -19,16 +19,16 @@ def registerNewMember():
 #update email
 def updateEmail(id):
     print("~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~")
-    newEmail = input("Please input your new email")
-    query = "UPDATE ClubMembers SET email = %s WHERE memberID = %s;"
+    newEmail = input("Please input your new email: ")
+    query = "UPDATE ClubMember SET email = %s WHERE memberID = %s;"
     database.executeQuery(query, (newEmail, id))
     return
 
 #update password
 def updatePassword(id):
     print("~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~")
-    newPassword = input("Please input your new password")
-    query = "UPDATE ClubMembers SET password = %s WHERE memberID = %s;"
+    newPassword = input("Please input your new password: ")
+    query = "UPDATE ClubMember SET password = %s WHERE memberID = %s;"
     database.executeQuery(query, (newPassword, id))
     return
 
@@ -169,11 +169,11 @@ def displayDashboard(id):
         print()
     
     #Display classes
-    query = """SELECT c.classid, c.roomNum, c.day, c.startTime, c.endTime
+    query = """SELECT c.classid, c.roomNum, c.day, c.type, c.startTime, c.endTime
             FROM class c JOIN participatesIn p 
             ON c.classid=p.classid
             WHERE p.memberid=%s
-            ORDER BY c.day ASC"""
+            ORDER BY c.day, c.startTime ASC"""
     result = database.executeQuery(query, (id,))
     print("- - - - - - - - - - - - - - - - - - - -")
     print("Classes: ")
@@ -191,7 +191,8 @@ def displayDashboard(id):
 def viewAvailableTrainingSessions():
     query = """SELECT a.availabilityID, t.fName, t.lName, a.day, a.startTime, a.endTime
                 FROM Trainer t JOIN Availabilities a ON t.trainerID = a.trainerID
-                WHERE a.isFree = TRUE"""
+                WHERE a.isFree = TRUE
+                ORDER BY a.day, a.startTime ASC"""
     result = database.executeQuery(query)
     print("~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~")
     print("Schedules: \n")
@@ -216,9 +217,11 @@ def scheduleTraining(id):
 #9. Reschedule personal training session
 def rescheduleTraining(id):
     #show current training sessions
-    query = """SELECT ts.scheduleID, t.fName, t.lName, ts.day, ts.startTime, ts.endTime 
-            FROM TrainingSession ts JOIN Trainer t ON ts.trainerID = t.trainerID
-            WHERE memberID = %s"""
+    query = """SELECT ts.scheduleID, t.fName, t.lName, a.day, a.startTime, a.endTime 
+            FROM TrainingSession ts JOIN availabilities a ON ts.scheduleid = a.availabilityID
+            JOIN Trainer t ON a.trainerID=t.trainerID
+            WHERE memberID = %s
+            ORDER BY a.day, a.startTime ASC"""
     result = database.executeQuery(query, (id,))
 
     print("~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~")
@@ -241,19 +244,12 @@ def rescheduleTraining(id):
     print("~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~")
     choice = int(input("Input the schedule ID of the new training session: "))
     
-    query = """SELECT trainerid, day, startTime, endTime 
-            FROM availabilities
-            WHERE availabilityID = %s"""
-    
-    result = database.executeQuery(query, (choice,))
-    result = result[0]
-    
     #-----------------------------------------------------------------------------------------
     #REWORK THE TRAINING SESSIONS
     #add the training session
-    query = """INSERT INTO TrainingSession (memberID, trainerID, day, startTime, endTime)
-                VALUES (%s, %s, %s, %s, %s)"""
-    database.executeQuery(query, (id, result[0], result[1], result[2], result[3]))
+    query = """INSERT INTO TrainingSession (scheduleID, memberID)
+                VALUES (%s, %s)"""
+    database.executeQuery(query, (choice, id))
 
     #delete the current training session
     query = "DELETE FROM TrainingSession WHERE scheduleID = %s"
@@ -263,9 +259,11 @@ def rescheduleTraining(id):
 
 #10. Cancel personal training session
 def cancelTraining(id):
-    query = """SELECT ts.scheduleID, t.fName, t.lName, ts.day, ts.startTime, ts.endTime 
-            FROM TrainingSession ts JOIN Trainer t ON ts.trainerID = t.trainerID
-            WHERE memberID = %s"""
+    query = """SELECT ts.scheduleID, t.fName, t.lName, a.day, a.startTime, a.endTime 
+            FROM TrainingSession ts JOIN availabilities a ON ts.scheduleid = a.availabilityID
+            JOIN Trainer t ON a.trainerID=t.trainerID
+            WHERE memberID = %s
+            ORDER BY a.day, a.startTime ASC"""
     result = database.executeQuery(query, (id,))
 
     print("~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~")
@@ -302,8 +300,10 @@ def participateInClass(id):
     for classes in result:
         print("Class ID: ", classes[0])
         print("Room #:   ", classes[1])
-        print("Date:     ", classes[2])
-        print("Time:     ", classes[3], "-", classes[4])
+        print("Spots:    ", classes[2])
+        print("Type:     ", classes[3])
+        print("Date:     ", classes[4])
+        print("Time:     ", classes[5], "-", classes[6])
         print()
 
     print("- - - - - - - - - - - - - - - - - - - -")
@@ -318,19 +318,19 @@ def participateInClass(id):
 
 #12. Cancel class
 def cancelClass(id):
-    query = """SELECT c.classid, c.roomNum, c.day, c.startTime, c.endTime
+    query = """SELECT c.classid, c.roomNum, c.type, c.day, c.startTime, c.endTime
             FROM class c JOIN participatesIn p 
             ON c.classid=p.classid
             WHERE p.memberid=%s
-            ORDER BY c.day ASC"""
+            ORDER BY c.day, c.startTime ASC"""
     result = database.executeQuery(query, (id,))
     print("~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~")
     print("Classes: ")
     for classes in result:
         print("Class ID: ", classes[0])
         print("Room #:   ", classes[1])
-        print("Date:     ", classes[2])
-        print("Type:     ", classes[3])
+        print("Type:     ", classes[2])
+        print("Date:     ", classes[3])
         print("Time:     ", classes[4], "-", classes[5])
         print()
 

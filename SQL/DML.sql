@@ -28,3 +28,8 @@ VALUES
     ('Bench', 'You will die'),
     ('Squat rack', 'Good'),
     ('Treadmill', 'Not functional');
+
+INSERT INTO Class (roomNum, spots, type, day, startTime, endTime) 
+VALUES
+    (10, 10, 'Cardio', '2024-03-30', '8:30:00', '10:00:00'),
+    (2, 15, 'Yoga', '2024-04-02', '13:30:00', '15:00:00');
