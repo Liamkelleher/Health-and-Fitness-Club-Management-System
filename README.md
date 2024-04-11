@@ -36,6 +36,7 @@ The system aims to provide a seamless interface for managing fitness club operat
   - Execute the DDL.sql file on your PostgreSQL server to set up the database schema.
   - Populate the database with initial data using the DML.sql file.
 2. Application Setup:
+  - Navigate to the `connection.py` file. You will need to enter your database information within the `connect()`        function.
   - Navigate to the project directory and run the `program.py` file in your terminal.
   - Follow the on-screen prompts to log in, register, and utilize the management system.
 
