@@ -190,7 +190,7 @@ FOR EACH ROW
 EXECUTE FUNCTION cancelClass();
 
 -----------------------------
-CREATE FUNCTION removeClass()0
+CREATE FUNCTION removeClass()
 RETURNS TRIGGER AS $$
 BEGIN 
 	DELETE FROM ParticipatesIn
