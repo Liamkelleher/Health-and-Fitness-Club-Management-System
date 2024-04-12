@@ -44,4 +44,4 @@ The system aims to provide a seamless interface for managing fitness club operat
 
 ### Video Demo
 The video covers the ER model, schema mapping, and the walkthrough of DDL and DML files while demonstrating the functionalities implemented.
-https://youtu.be/BXzvmTQWBdg 
+https://youtu.be/S-CrZQyMfQc 
